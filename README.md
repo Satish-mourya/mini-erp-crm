@@ -6,7 +6,6 @@ A comprehensive Mini ERP and CRM application with a React (Vite) frontend and an
 
 **Test the deployed application here:** [https://mini-erp-crm-8orx.onrender.com/]
 
-*(Note: Provide some test credentials here if they need to log in to see the app)*
 
 ## Tech Stack
 
