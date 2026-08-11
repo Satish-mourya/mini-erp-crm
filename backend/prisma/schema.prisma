@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password_hash String
+  role          Role     @default(SALES)
+  created_at    DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  SALES
+  WAREHOUSE
+  ACCOUNTS
+}
+
+model Customer {
+  id             Int      @id @default(autoincrement())
+  name           String
+  mobile         String
+  email          String?
+  business_name  String?
+  gst_number     String?
+  type           CustomerType @default(RETAIL)
+  address        String?
+  status         CustomerStatus @default(LEAD)
+  follow_up_date DateTime?
+  notes          String?
+  created_at     DateTime @default(now())
+  
+  challans       Challan[]
+}
+
+enum CustomerType {
+  RETAIL
+  WHOLESALE
+  DISTRIBUTOR
+}
+
+enum CustomerStatus {
+  LEAD
+  ACTIVE
+  INACTIVE
+}
+
+model Product {
+  id               Int      @id @default(autoincrement())
+  name             String
+  sku              String   @unique
+  category         String?
+  unit_price       Float
+  current_stock    Int      @default(0)
+  min_stock_alert  Int      @default(0)
+  location         String?
+  created_at       DateTime @default(now())
+
+  stock_movements  StockMovementLog[]
+  challan_items    ChallanItem[]
+}
+
+model StockMovementLog {
+  id          Int      @id @default(autoincrement())
+  product_id  Int
+  qty_changed Int
+  type        MovementType
+  reason      String?
+  created_by  Int
+  timestamp   DateTime @default(now())
+
+  product     Product  @relation(fields: [product_id], references: [id])
+}
+
+enum MovementType {
+  IN
+  OUT
+}
+
+model Challan {
+  id             Int      @id @default(autoincrement())
+  challan_number String   @unique
+  customer_id    Int
+  status         ChallanStatus @default(DRAFT)
+  created_by     Int
+  created_at     DateTime @default(now())
+
+  customer       Customer @relation(fields: [customer_id], references: [id])
+  items          ChallanItem[]
+}
+
+enum ChallanStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+model ChallanItem {
+  id                    Int      @id @default(autoincrement())
+  challan_id            Int
+  product_id            Int
+  product_snapshot_data Json
+  quantity              Int
+
+  challan               Challan  @relation(fields: [challan_id], references: [id])
+  product               Product  @relation(fields: [product_id], references: [id])
+}

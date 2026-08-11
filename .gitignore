@@ -1,0 +1,22 @@
+# Node.js
+node_modules/
+
+# Environment Variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Build Outputs
+dist/
+build/
+.next/
+
+# IDEs and Editors
+.vscode/
+.idea/
+.DS_Store
+
+# Prisma
+/backend/generated/prisma
+
