@@ -14,7 +14,10 @@ async function main() {
     database: dbUrl.pathname.slice(1),
   });
 
-  const passwordHash = await bcrypt.hash('admin123', 10);
+  const adminPasswordHash = await bcrypt.hash('admin123', 10);
+  const salesPasswordHash = await bcrypt.hash('sales123', 10);
+  const warehousePasswordHash = await bcrypt.hash('warehouse123', 10);
+  const accountsPasswordHash = await bcrypt.hash('account123', 10);
   const conn = await pool.getConnection();
 
   try {
@@ -22,15 +25,27 @@ async function main() {
       `INSERT INTO User (email, name, password_hash, role, created_at) 
        VALUES (?, ?, ?, 'ADMIN', NOW()) 
        ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)`,
-      ['admin@erp.com', 'Admin User', passwordHash]
+      ['admin@erp.com', 'Admin User', adminPasswordHash]
+    );
+    await conn.query(
+      `INSERT INTO User (email, name, password_hash, role, created_at) 
+       VALUES (?, ?, ?, 'SALES', NOW()) 
+       ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)`,
+      ['sales@test.com', 'Sales User', salesPasswordHash]
+    );
+    await conn.query(
+      `INSERT INTO User (email, name, password_hash, role, created_at) 
+       VALUES (?, ?, ?, 'WAREHOUSE', NOW()) 
+       ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)`,
+      ['warehouse@test.com', 'Warehouse User', warehousePasswordHash]
     );
     await conn.query(
       `INSERT INTO User (email, name, password_hash, role, created_at) 
        VALUES (?, ?, ?, 'ACCOUNTS', NOW()) 
        ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)`,
-      ['accounts@test.com', 'Accounts Team', passwordHash]
+      ['accounts@test.com', 'Accounts User', accountsPasswordHash]
     );
-    console.log('Seed data inserted: admin@erp.com & accounts@test.com / admin123');
+    console.log('Seed data inserted for Admin, Sales, Warehouse, and Accounts roles.');
   } finally {
     conn.release();
     pool.end();
